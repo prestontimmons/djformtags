@@ -4,6 +4,7 @@ from django import template
 register = template.Library()
 
 DEFAULT_TEMPLATE = "formtags/field.html"
+WRAPPER_CLASS = "field-wrapper"
 
 
 class TextFieldNode(template.Node):
@@ -19,7 +20,7 @@ class TextFieldNode(template.Node):
         self.placeholder = kwargs.get("placeholder")
         self.rel = kwargs.get("rel")
         self.widget_class = kwargs.get("widget_class")
-        self.wrapper_class = kwargs.get("wrapper_class")
+        self.wrapper_class = kwargs.get("wrapper_class", WRAPPER_CLASS)
 
     def render(self, context):
         try:
