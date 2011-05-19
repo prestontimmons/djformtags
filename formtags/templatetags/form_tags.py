@@ -27,9 +27,9 @@ class TextFieldNode(template.Node):
         except template.VariableDoesNotExist:
             return ""
 
-        if self.input_class:
+        if self.widget_class:
             c = "%s %s" % (form_field.field.widget.attrs.get('class', ''),
-                    self.input_class)
+                    self.widget_class)
             c = c.strip()
             form_field.field.widget.attrs['class'] = c
 
@@ -71,7 +71,7 @@ class TextFieldNode(template.Node):
         t = template.loader.get_template(template_name)
         return t.render(template.Context(dict(
             field=form_field,
-            wrapper_class=wrapper_class,
+            wrapper_class=self.wrapper_class,
             help_text=self.help_text,
             required_decorator=required_decorator,
         )))
@@ -84,7 +84,7 @@ def do_render_field(parser, token):
 
     Example Usage::
 
-        {% render_field form.myfield label="My Label" input_class="myfield" %}
+        {% render_field form.myfield label="My Label" widget_class="myfield" %}
         {% render_field form.email placeholder="me@example.com" %}
         {% render_field form.date help_text="Format: yyyy-mm-dd" %}
     """
