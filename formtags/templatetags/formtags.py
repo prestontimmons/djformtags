@@ -20,7 +20,7 @@ class TextFieldNode(template.Node):
         self.placeholder = kwargs.get("placeholder")
         self.rel = kwargs.get("rel")
         self.widget_class = kwargs.get("widget_class")
-        self.row_class = kwargs.get("wrapper_class", ROW_CLASS)
+        self.row_class = kwargs.get("wrapper_class")
         if not self.row_class:
             self.row_class = kwargs.get("row_class", ROW_CLASS)
 
