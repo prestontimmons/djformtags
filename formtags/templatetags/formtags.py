@@ -23,6 +23,7 @@ class TextFieldNode(template.Node):
         self.row_class = kwargs.get("wrapper_class")
         if not self.row_class:
             self.row_class = kwargs.get("row_class", ROW_CLASS)
+        self.context = kwargs
 
     def render(self, context):
         try:
@@ -64,7 +65,7 @@ class TextFieldNode(template.Node):
             except template.VariableDoesNotExist:
                 template_name = DEFAULT_TEMPLATE
 
-        # Require fields can be decorated if required_field_decorator
+        # Required fields can be decorated if required_field_decorator
         # is specified.
         try:
             required_decorator = template.Variable("required_field_decorator").resolve(context)
@@ -77,6 +78,7 @@ class TextFieldNode(template.Node):
             row_class=self.row_class,
             help_text=self.help_text,
             required_decorator=required_decorator,
+            **self.context
         )))
 
 

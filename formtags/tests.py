@@ -60,3 +60,12 @@ class RenderFieldTemplateTagTest(TestCase):
         template = Template("{% load formtags %}{% render_field form.field %}")
         request = HttpRequest()
         self.assertEqual(template.render(Context(dict(request=request))), "")
+
+    def test_kwargs(self):
+        template = Template("{% load formtags %}{% render_field form.field keyword='test' template='formtags/test.html' %}")
+        request = HttpRequest()
+        form = TestForm()
+        self.assertEqual(
+            '<input id="id_field" type="text" name="field" maxlength="100" />\ntest\n',
+            template.render(Context(dict(form=form, request=request))),
+        )
