@@ -4,7 +4,6 @@ from django import template
 register = template.Library()
 
 DEFAULT_TEMPLATE = "formtags/field.html"
-ROW_CLASS = "row"
 
 
 class TextFieldNode(template.Node):
@@ -20,9 +19,6 @@ class TextFieldNode(template.Node):
         self.placeholder = kwargs.get("placeholder")
         self.rel = kwargs.get("rel")
         self.widget_class = kwargs.get("widget_class")
-        self.row_class = kwargs.get("wrapper_class")
-        if not self.row_class:
-            self.row_class = kwargs.get("row_class", ROW_CLASS)
         self.context = kwargs
 
     def render(self, context):
@@ -75,7 +71,6 @@ class TextFieldNode(template.Node):
         t = template.loader.get_template(template_name)
         return t.render(template.Context(dict(
             field=form_field,
-            row_class=self.row_class,
             help_text=self.help_text,
             required_decorator=required_decorator,
             **self.context
