@@ -1,3 +1,5 @@
+import re
+
 from django import template
 
 
@@ -106,3 +108,44 @@ def do_render_field(parser, token):
             kwargs[str(kwarg.split("=")[0])] = value
 
     return TextFieldNode(arg, **kwargs)
+
+
+class SetAttributeNode(template.Node):
+    def __init__(self, field, name, value):
+        self.field = field
+        self.name = name
+        self.value = value
+
+    def render(self, context):
+        try:
+            form_field = template.Variable(self.field).resolve(context)
+        except template.VariableDoesNotExist:
+            return ""
+
+        if self.name == "type":
+            form_field.field.widget.input_type = self.value
+        else:
+            form_field.field.widget.attrs.update({
+                self.name: self.value,
+            })
+
+        return ""
+
+
+@register.tag(name="setattr")
+def do_setattr(parser, token):
+    """
+    Sets an attribute on a form field.
+
+    Example Usage::
+
+        {% setattr form.myfield placeholder "Email Address" %}
+    """
+    try:
+        field, name, value = re.search('setattr ([^ ]+) "([^ ]+)" "([^ ]+)"',
+            token.contents).groups()
+    except AttributeError:
+        raise template.TemplateSyntaxError, \
+            "%r tag had invalid arguments." % token.split_contents()[0]
+
+    return SetAttributeNode(field, name, value)

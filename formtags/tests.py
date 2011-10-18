@@ -69,3 +69,28 @@ class RenderFieldTemplateTagTest(TestCase):
             '<input id="id_field" type="text" name="field" maxlength="100" />\ntest\n',
             template.render(Context(dict(form=form, request=request))),
         )
+
+
+class SetAttrTemplateTagTest(TestCase):
+
+    def test_setattr(self):
+        template = Template('{% load formtags %}{% setattr form.field "placeholder" "Field" %}{{ form.field }}')
+        context = Context(dict(
+            form=TestForm(),
+            request=HttpRequest(),
+        ))
+        self.assertEqual(
+            template.render(context),
+            '<input id="id_field" type="text" placeholder="Field" name="field" maxlength="100" />'
+        )
+
+    def test_set_input_type(self):
+        template = Template('{% load formtags %}{% setattr form.field "type" "email" %}{{ form.field }}')
+        context = Context(dict(
+            form=TestForm(),
+            request=HttpRequest(),
+        ))
+        self.assertEqual(
+            template.render(context),
+            '<input id="id_field" type="email" name="field" maxlength="100" />',
+        )
