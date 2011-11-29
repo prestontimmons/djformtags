@@ -139,10 +139,10 @@ def do_setattr(parser, token):
 
     Example Usage::
 
-        {% setattr form.myfield placeholder "Email Address" %}
+        {% setattr form.myfield "placeholder" "Email Address" %}
     """
     try:
-        field, name, value = re.search('setattr ([^ ]+) "([^ ]+)" "([^ ]+)"',
+        field, name, value = re.search('setattr ([^ ]+) "([^"]+)" "([^"]+)"',
             token.contents).groups()
     except AttributeError:
         raise template.TemplateSyntaxError, \
