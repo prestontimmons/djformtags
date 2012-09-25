@@ -2,10 +2,45 @@ from django import forms
 from django.http import HttpRequest
 from django.template import Template, Context
 from django.test import TestCase
+from django.test.utils import (
+    setup_test_template_loader,
+    restore_template_loaders,
+)
 
 
 class TestForm(forms.Form):
     field = forms.CharField(max_length=100)
+
+
+class FormRowTemplateTagTest(TestCase):
+
+    def setUp(self):
+        templates = {
+            "field.html": Template("{{ field }}"),
+            "context.html": Template("{{ variable }}"),
+        }
+        setup_test_template_loader(templates)
+
+    def tearDown(self):
+        restore_template_loaders()
+
+    def test_form_row(self):
+        template = Template('{% load formtags %}{% formrow form.field template="field.html" %}')
+        form = TestForm()
+        context = Context(dict(form=form))
+        self.assertEqual(
+            template.render(context),
+            '<input id="id_field" type="text" name="field" maxlength="100" />',
+        )
+
+    def test_maintain_context(self):
+        template = Template('{% load formtags %}{% formrow form.field template="context.html" %}')
+        form = TestForm()
+        context = Context(dict(form=form, variable="variable"))
+        self.assertEqual(
+            template.render(context),
+            'variable',
+        )
 
 
 class RenderFieldTemplateTagTest(TestCase):

@@ -1,6 +1,8 @@
 import re
 
 from django import template
+from django.template import Context, Variable, VariableDoesNotExist
+from django.template.loader import get_template
 
 
 register = template.Library()
@@ -149,3 +151,58 @@ def do_setattr(parser, token):
             "%r tag had invalid arguments." % token.split_contents()[0]
 
     return SetAttributeNode(field, name, value)
+
+
+class FormRowNode(template.Node):
+
+    def __init__(self, field, **kwargs):
+        self.field = field
+        self.kwargs = kwargs
+
+    def render(self, context):
+        try:
+            field = Variable(self.field).resolve(context)
+        except VariableDoesNotExist:
+            return ""
+
+        if self.kwargs.get("label"):
+            field.label = self.kwargs["label"]
+
+        if self.kwargs.get("class"):
+            field.field.widget.attrs["class"] = self.kwargs["class"]
+
+        template_name = self.kwargs.get("template")
+        if not template_name:
+            template_name = template.Variable("field_template").resolve(context)
+
+        t = get_template(template_name)
+
+        for entry in context:
+            for key in entry:
+                self.kwargs.setdefault(key, context[key])
+
+        self.kwargs["field"] = field
+
+        return t.render(Context(self.kwargs))
+
+
+@register.tag(name="formrow")
+def do_formrow(parser, token):
+    try:
+        tag_name, args = token.contents.split(None, 1)
+    except ValueError:
+        raise template.TemplateSyntaxError, \
+            "%r tag requires arguments.\n" % token.contents.split()[0]
+
+    arg = args.split(" ")[0]
+
+    kwargs = {}
+    for kwarg in token.split_contents()[2:]:
+        if "=" in kwarg:
+            value = kwarg.split("=")[1]
+            if value[0] == value[-1]:
+                if value[0] in ["'", '"']:
+                    value = value[1:-1]
+            kwargs[str(kwarg.split("=")[0])] = value
+
+    return FormRowNode(arg, **kwargs)
