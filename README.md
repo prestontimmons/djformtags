@@ -1,5 +1,5 @@
-Provides control of Django form field rendering from within the template
-========================================================================
+Control Django form field rendering from within the template
+------------------------------------------------------------
 
 This app provides two minimal template tags that simplify and enhance form rendering in Django templates.
 
