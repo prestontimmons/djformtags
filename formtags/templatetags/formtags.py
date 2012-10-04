@@ -126,6 +126,8 @@ class SetAttributeNode(template.Node):
 
         if self.name == "type":
             form_field.field.widget.input_type = self.value
+        elif self.name == "label":
+            form_field.label = self.value
         else:
             form_field.field.widget.attrs.update({
                 self.name: self.value,
