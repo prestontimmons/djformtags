@@ -129,3 +129,14 @@ class SetAttrTemplateTagTest(TestCase):
             template.render(context),
             '<input id="id_field" type="email" name="field" maxlength="100" />',
         )
+
+    def test_set_label(self):
+        template = Template('{% load formtags %}{% setattr form.field "label" "Email Address" %}{{ form.field.label_tag }}')
+        context = Context(dict(
+            form=TestForm(),
+            request=HttpRequest(),
+        ))
+        self.assertEqual(
+            template.render(context),
+            '<label for="id_field">Field</label>',
+        )
