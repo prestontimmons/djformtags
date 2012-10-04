@@ -1,31 +1,85 @@
-Form Tags
-=========
+Provides control of Django form field rendering from within the template
+========================================================================
 
-Template tags for rendering Django forms.
+This app provides two minimal template tags that simplify and enhance form rendering in Django templates.
 
-Usage
------
+One: Set custom attributes on a form field
+------------------------------------------
 
-Rendering fields in a template::
+Say you have the following form with an email field. 
 
-    {% load formtags %}
+```python
+class EmailForm(forms.Form):
+    email = forms.CharField(max_length=256)
+```
 
-    {% render_field form.myfield label="My Label" widget_class="myfield" %}
-    {% render_field form.email placeholder="me@example.com" %}
-    {% render_field form.date help_text="Format: yyyy-mm-dd" %}
+Now, you want to reuse this form, but optimized for a mobile device. Let's do it in the form class:
 
-Adding a required field decorator::
+```python
+class EmailField(forms.TextInput):
+    input_type = "email"
 
-    {% with required_field_decorator="*" %}
-      {% render_field form.first_name %}
-      {% render_field form.last_name %}
-    {% endwith %}
+class MobileEmailForm(EmailForm):
+    email = forms.CharField(
+        widget=forms.TextInput(attrs={
+            "autocapitalize": "off",
+            "class": "mobile-input",
+            "placeholder": "me@example.com",
+        ),
+    )
+```
 
-Rendering fields with a custom template::
+Really? That's ugly, it requires a new form definition, and it's messing with stuff that belongs in the template.
 
-    {% render_field form.country template="mytemplate.html" %}
+Enter {% setattr %}:
 
-    {% with field_template="myothertemplate.html" %}
-      {% render_field form.address1 %}
-      {% render_field form.address2 %}
-    {% endwith %}
+```html
+{% load formtags %}
+
+{% setattr form.email "type" "email" %}
+{% setattr form.email "autocapitalize" "off" %}
+{% setattr form.email "class" "mobile-input" %}
+{% setattr form.email "placeholder" "me@example.com" %}
+{{ form.email }}
+```
+
+And you get:
+
+```
+<input type="email" name="email" maxlength="256" autocapitalize="off" placeholder="me@example.com" class="mobile-input" id="id_email" />
+```
+
+Set whatever attribute you want directly on the field right in the template where you're rendering the form. No boilerplate needed.
+
+
+Two: Rendering form rows
+------------------------
+
+This tag is more convenience than anything.
+
+Start with a basic form row template, formrow.html:
+
+```html
+<div class="form-row">
+  {% if field.errors %}<div class="form-row-message">{{ field.errors.0 }}</div>{% endif %}
+  {{ field.label_tag }}
+  {{ field }}
+</div>
+```
+
+Enter {% formrow %}:
+
+```html
+{% formrow form.email template="formrow.html" %}
+```
+
+You can also pass in a couple common arguments, or pass any values to the form row template.
+
+```html
+{% formrow form.email class="input-email" label="Email Address" template="formrow.html" %}
+```
+
+And...
+------
+
+The end.
