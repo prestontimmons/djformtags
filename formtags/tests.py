@@ -43,7 +43,44 @@ class FormRowTemplateTagTest(TestCase):
         )
 
 
+class SetAttrTemplateTagTest(TestCase):
+
+    def test_setattr(self):
+        template = Template('{% load formtags %}{% setattr form.field "placeholder" "Email Address" %}{{ form.field }}')
+        context = Context(dict(
+            form=TestForm(),
+            request=HttpRequest(),
+        ))
+        self.assertEqual(
+            template.render(context),
+            '<input id="id_field" type="text" placeholder="Email Address" name="field" maxlength="100" />'
+        )
+
+    def test_set_input_type(self):
+        template = Template('{% load formtags %}{% setattr form.field "type" "email" %}{{ form.field }}')
+        context = Context(dict(
+            form=TestForm(),
+            request=HttpRequest(),
+        ))
+        self.assertEqual(
+            template.render(context),
+            '<input id="id_field" type="email" name="field" maxlength="100" />',
+        )
+
+    def test_set_label(self):
+        template = Template('{% load formtags %}{% setattr form.field "label" "Email Address" %}{{ form.field.label_tag }}')
+        context = Context(dict(
+            form=TestForm(),
+            request=HttpRequest(),
+        ))
+        self.assertEqual(
+            template.render(context),
+            '<label for="id_field">Field</label>',
+        )
+
+
 class RenderFieldTemplateTagTest(TestCase):
+    """ The oldies. """
 
     def test_display_render_field(self):
         template = Template("{% load formtags %}{% render_field form.field %}")
@@ -106,37 +143,3 @@ class RenderFieldTemplateTagTest(TestCase):
         )
 
 
-class SetAttrTemplateTagTest(TestCase):
-
-    def test_setattr(self):
-        template = Template('{% load formtags %}{% setattr form.field "placeholder" "Email Address" %}{{ form.field }}')
-        context = Context(dict(
-            form=TestForm(),
-            request=HttpRequest(),
-        ))
-        self.assertEqual(
-            template.render(context),
-            '<input id="id_field" type="text" placeholder="Email Address" name="field" maxlength="100" />'
-        )
-
-    def test_set_input_type(self):
-        template = Template('{% load formtags %}{% setattr form.field "type" "email" %}{{ form.field }}')
-        context = Context(dict(
-            form=TestForm(),
-            request=HttpRequest(),
-        ))
-        self.assertEqual(
-            template.render(context),
-            '<input id="id_field" type="email" name="field" maxlength="100" />',
-        )
-
-    def test_set_label(self):
-        template = Template('{% load formtags %}{% setattr form.field "label" "Email Address" %}{{ form.field.label_tag }}')
-        context = Context(dict(
-            form=TestForm(),
-            request=HttpRequest(),
-        ))
-        self.assertEqual(
-            template.render(context),
-            '<label for="id_field">Field</label>',
-        )
