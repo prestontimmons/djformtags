@@ -46,7 +46,7 @@ class FormRowTemplateTagTest(TestCase):
 class SetAttrTemplateTagTest(TestCase):
 
     def test_setattr(self):
-        template = Template('{% load formtags %}{% setattr form.field "placeholder" "Email Address" %}{{ form.field }}')
+        template = Template('{% load formtags %}{% setattr form.field \'placeholder\' "Email Address" %}{{ form.field }}')
         context = Context(dict(
             form=TestForm(),
             request=HttpRequest(),

@@ -8,32 +8,8 @@ from django.template.loader import get_template
 register = template.Library()
 
 
-class SetAttributeNode(template.Node):
-    def __init__(self, field, name, value):
-        self.field = field
-        self.name = name
-        self.value = value
-
-    def render(self, context):
-        try:
-            form_field = Variable(self.field).resolve(context)
-        except VariableDoesNotExist:
-            return ""
-
-        if self.name == "type":
-            form_field.field.widget.input_type = self.value
-        elif self.name == "label":
-            form_field.label = self.value
-        else:
-            form_field.field.widget.attrs.update({
-                self.name: self.value,
-            })
-
-        return ""
-
-
-@register.tag(name="setattr")
-def do_setattr(parser, token):
+@register.simple_tag
+def setattr(field, attribute, value):
     """
     Sets an attribute on a form field.
 
@@ -41,14 +17,16 @@ def do_setattr(parser, token):
 
         {% setattr form.myfield "placeholder" "Email Address" %}
     """
-    try:
-        field, name, value = re.search('setattr ([^ ]+) "([^"]+)" "([^"]+)"',
-            token.contents).groups()
-    except AttributeError:
-        raise template.TemplateSyntaxError, \
-            "%r tag had invalid arguments." % token.split_contents()[0]
+    if attribute == "type":
+        field.field.widget.input_type = value
+    elif attribute == "label":
+        field.label = value
+    else:
+        field.field.widget.attrs.update({
+            attribute: value,
+        })
 
-    return SetAttributeNode(field, name, value)
+    return ""
 
 
 class FormRowNode(template.Node):
