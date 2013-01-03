@@ -17,6 +17,9 @@ def setattr(field, attribute, value):
 
         {% setattr form.myfield "placeholder" "Email Address" %}
     """
+    if not hasattr(field, "field"):
+        return ""
+
     if attribute == "type":
         field.field.widget.input_type = value
     elif attribute == "label":
