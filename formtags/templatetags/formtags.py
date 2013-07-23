@@ -1,5 +1,5 @@
 from django import template
-from django.template import Context, Variable, VariableDoesNotExist
+from django.template import Variable, VariableDoesNotExist
 from django.template.loader import get_template
 
 from ..util import get_field_type
@@ -32,59 +32,25 @@ def setattr(field, attribute, value):
     return ""
 
 
-class FormRowNode(template.Node):
+@register.simple_tag(takes_context=True)
+def formrow(context, field, **kwargs):
+    context = context.__copy__()
 
-    def __init__(self, field, **kwargs):
-        self.field = field
-        self.kwargs = kwargs
+    if kwargs.get("label"):
+        field.label = kwargs["label"]
 
-    def render(self, context):
-        try:
-            field = Variable(self.field).resolve(context)
-        except VariableDoesNotExist:
-            return ""
+    if kwargs.get("class"):
+        field.field.widget.attrs["class"] = kwargs["class"]
 
-        if self.kwargs.get("label"):
-            field.label = self.kwargs["label"]
+    template_name = kwargs.get("template")
+    if not template_name:
+        template_name = context["field_template"]
 
-        if self.kwargs.get("class"):
-            field.field.widget.attrs["class"] = self.kwargs["class"]
+    t = get_template(template_name)
 
-        template_name = self.kwargs.get("template")
-        if not template_name:
-            template_name = Variable("field_template").resolve(context)
+    context["field"] = field
 
-        t = get_template(template_name)
-
-        for entry in context:
-            for key in entry:
-                self.kwargs.setdefault(key, context[key])
-
-        self.kwargs["field"] = field
-
-        return t.render(Context(self.kwargs))
-
-
-@register.tag(name="formrow")
-def do_formrow(parser, token):
-    try:
-        tag_name, args = token.contents.split(None, 1)
-    except ValueError:
-        raise template.TemplateSyntaxError, \
-            "%r tag requires arguments.\n" % token.contents.split()[0]
-
-    arg = args.split(" ")[0]
-
-    kwargs = {}
-    for kwarg in token.split_contents()[2:]:
-        if "=" in kwarg:
-            value = kwarg.split("=")[1]
-            if value[0] == value[-1]:
-                if value[0] in ["'", '"']:
-                    value = value[1:-1]
-            kwargs[str(kwarg.split("=")[0])] = value
-
-    return FormRowNode(arg, **kwargs)
+    return t.render(context)
 
 
 @register.assignment_tag

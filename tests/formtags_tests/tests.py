@@ -1,13 +1,12 @@
 from django import forms
 from django.http import HttpRequest
-from django.template import Template, Context
+from django.template import Context, Template, TemplateDoesNotExist
 from django.test import TestCase
 from django.test.utils import (
     setup_test_template_loader,
     restore_template_loaders,
 )
 
-from formtags.templatetags.formtags import field_type
 from formtags.util import get_field_type
 
 
@@ -56,6 +55,7 @@ class FormRowTemplateTagTest(TestCase):
     def setUp(self):
         templates = {
             "field.html": Template("{{ field }}"),
+            "label.html": Template("{{ field.label }}"),
             "context.html": Template("{{ variable }}"),
         }
         setup_test_template_loader(templates)
@@ -72,6 +72,33 @@ class FormRowTemplateTagTest(TestCase):
             '<input id="id_field" maxlength="100" name="field" type="text" />',
         )
 
+    def test_label(self):
+        template = Template('{% load formtags %}{% formrow form.field label="New Label" template="label.html" %}')
+        form = TestForm()
+        context = Context(dict(form=form))
+        self.assertEqual(
+            template.render(context),
+            "New Label",
+        )
+
+    def test_class(self):
+        template = Template('{% load formtags %}{% formrow form.field class="input-text" template="field.html" %}')
+        form = TestForm()
+        context = Context(dict(form=form))
+        self.assertEqual(
+            template.render(context),
+            '<input class="input-text" id="id_field" maxlength="100" name="field" type="text" />',
+        )
+
+    def test_field_template(self):
+        template = Template('{% load formtags %}{% with field_template="label.html" %}{% formrow form.field %}{% endwith %}')
+        form = TestForm()
+        context = Context(dict(form=form))
+        self.assertEqual(
+            template.render(context),
+            'Field',
+        )
+
     def test_maintain_context(self):
         template = Template('{% load formtags %}{% formrow form.field template="context.html" %}')
         form = TestForm()
@@ -80,6 +107,13 @@ class FormRowTemplateTagTest(TestCase):
             template.render(context),
             "variable",
         )
+
+    def test_template_missing(self):
+        template = Template('{% load formtags %}{% formrow form.field template="missing.html" %}')
+        form = TestForm()
+        context = Context(dict(form=form))
+        with self.assertRaises(TemplateDoesNotExist):
+            template.render(context)
 
 
 class SetAttrTemplateTagTest(TestCase):
