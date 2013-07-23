@@ -57,6 +57,7 @@ class FormRowTemplateTagTest(TestCase):
             "field.html": Template("{{ field }}"),
             "label.html": Template("{{ field.label }}"),
             "context.html": Template("{{ variable }}"),
+            "kwargs.html": Template("{{ x }} {{ y }}"),
         }
         setup_test_template_loader(templates)
 
@@ -106,6 +107,15 @@ class FormRowTemplateTagTest(TestCase):
         self.assertEqual(
             template.render(context),
             "variable",
+        )
+
+    def test_kwargs(self):
+        template = Template('{% load formtags %}{% formrow form.field template="kwargs.html" x="1" y="2" %}')
+        form = TestForm()
+        context = Context(dict(form=form))
+        self.assertEqual(
+            template.render(context),
+            "1 2",
         )
 
     def test_template_missing(self):

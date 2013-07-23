@@ -49,6 +49,7 @@ def formrow(context, field, **kwargs):
     t = get_template(template_name)
 
     context["field"] = field
+    context.update(kwargs)
 
     return t.render(context)
 
