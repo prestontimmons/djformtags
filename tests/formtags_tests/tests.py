@@ -7,8 +7,8 @@ from django.test.utils import (
     restore_template_loaders,
 )
 
-from .templatetags.formtags import field_type
-from .util import get_field_type
+from formtags.templatetags.formtags import field_type
+from formtags.util import get_field_type
 
 
 class TestForm(forms.Form):
@@ -69,7 +69,7 @@ class FormRowTemplateTagTest(TestCase):
         context = Context(dict(form=form))
         self.assertEqual(
             template.render(context),
-            '<input id="id_field" type="text" name="field" maxlength="100" />',
+            '<input id="id_field" maxlength="100" name="field" type="text" />',
         )
 
     def test_maintain_context(self):
@@ -92,7 +92,7 @@ class SetAttrTemplateTagTest(TestCase):
         ))
         self.assertEqual(
             template.render(context),
-            '<input id="id_field" type="text" placeholder="Email Address" name="field" maxlength="100" />'
+            '<input id="id_field" maxlength="100" name="field" placeholder="Email Address" type="text" />',
         )
 
     def test_empty(self):
@@ -113,7 +113,7 @@ class SetAttrTemplateTagTest(TestCase):
         ))
         self.assertEqual(
             template.render(context),
-            '<input id="id_field" type="email" name="field" maxlength="100" />',
+            '<input id="id_field" maxlength="100" name="field" type="email" />',
         )
 
     def test_set_label(self):
@@ -187,6 +187,6 @@ class RenderFieldTemplateTagTest(TestCase):
         request = HttpRequest()
         form = TestForm()
         self.assertEqual(
-            '<input id="id_field" type="text" name="field" maxlength="100" />\ntest\n',
             template.render(Context(dict(form=form, request=request))),
+            '<input id="id_field" maxlength="100" name="field" type="text" />\ntest\n',
         )
