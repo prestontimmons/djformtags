@@ -1,8 +1,8 @@
-import re
-
 from django import template
 from django.template import Context, Variable, VariableDoesNotExist
 from django.template.loader import get_template
+
+from ..util import get_field_type
 
 
 register = template.Library()
@@ -85,6 +85,11 @@ def do_formrow(parser, token):
             kwargs[str(kwarg.split("=")[0])] = value
 
     return FormRowNode(arg, **kwargs)
+
+
+@register.assignment_tag
+def field_type(field):
+    return get_field_type(field.field.widget)
 
 
 class TextFieldNode(template.Node):

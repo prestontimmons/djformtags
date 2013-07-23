@@ -7,9 +7,48 @@ from django.test.utils import (
     restore_template_loaders,
 )
 
+from .templatetags.formtags import field_type
+from .util import get_field_type
+
 
 class TestForm(forms.Form):
     field = forms.CharField(max_length=100)
+
+
+class GetFieldTypeTest(TestCase):
+
+    def test_text(self):
+        self.assertEqual(get_field_type(forms.TextInput()), "text")
+
+    def test_hidden(self):
+        self.assertEqual(get_field_type(forms.HiddenInput()), "hidden")
+
+    def test_file(self):
+        self.assertEqual(get_field_type(forms.FileInput()), "file")
+
+    def test_textarea(self):
+        self.assertEqual(get_field_type(forms.Textarea()), "textarea")
+
+    def test_checkbox(self):
+        self.assertEqual(get_field_type(forms.CheckboxInput()), "checkbox")
+
+    def test_select(self):
+        self.assertEqual(get_field_type(forms.Select()), "select")
+
+    def test_radio(self):
+        self.assertEqual(get_field_type(forms.RadioSelect()), "radio")
+
+
+class FieldTypeTagTest(TestCase):
+
+    def test_text(self):
+        template = Template("{% load formtags %}{% field_type form.field as type %}{{ type }}")
+        form = TestForm()
+        context = Context(dict(form=form))
+        self.assertEqual(
+            template.render(context),
+            "text",
+        )
 
 
 class FormRowTemplateTagTest(TestCase):
@@ -39,14 +78,14 @@ class FormRowTemplateTagTest(TestCase):
         context = Context(dict(form=form, variable="variable"))
         self.assertEqual(
             template.render(context),
-            'variable',
+            "variable",
         )
 
 
 class SetAttrTemplateTagTest(TestCase):
 
     def test_setattr(self):
-        template = Template('{% load formtags %}{% setattr form.field \'placeholder\' "Email Address" %}{{ form.field }}')
+        template = Template('{% load formtags %}{% setattr form.field "placeholder" "Email Address" %}{{ form.field }}')
         context = Context(dict(
             form=TestForm(),
             request=HttpRequest(),
@@ -57,13 +96,13 @@ class SetAttrTemplateTagTest(TestCase):
         )
 
     def test_empty(self):
-        template = Template('{% load formtags %}{% setattr form.field \'placeholder\' "Email Address" %}{{ form.field }}')
+        template = Template('{% load formtags %}{% setattr form.field "placeholder" "Email Address" %}{{ form.field }}')
         context = Context(dict(
             request=HttpRequest(),
         ))
         self.assertEqual(
             template.render(context),
-            ''
+            ""
         )
 
     def test_set_input_type(self):
@@ -151,5 +190,3 @@ class RenderFieldTemplateTagTest(TestCase):
             '<input id="id_field" type="text" name="field" maxlength="100" />\ntest\n',
             template.render(Context(dict(form=form, request=request))),
         )
-
-
