@@ -23,7 +23,7 @@ def setattr(field, attribute, value):
     if attribute == "type":
         field.field.widget.input_type = value
     elif attribute == "label":
-        field.label = value
+        field.field.label = value
     else:
         field.field.widget.attrs.update({
             attribute: value,
