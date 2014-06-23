@@ -24,6 +24,10 @@ def setattr(field, attribute, value):
         field.field.widget.input_type = value
     elif attribute == "label":
         field.field.label = value
+    elif attribute == "classes":
+        cls = field.field.widget.attrs.get("class", "")
+        cls += " %s" % value
+        field.field.widget.attrs["class"] = cls.strip()
     else:
         field.field.widget.attrs.update({
             attribute: value,

@@ -149,6 +149,17 @@ class SetAttrTemplateTagTest(TestCase):
             '<input id="id_field" maxlength="100" name="field" placeholder="Email Address" type="text" />',
         )
 
+    def test_classes(self):
+        template = Template('{% load formtags %}{% setattr form.field "classes" "one" %}{% setattr form.field "classes" "two" %}{{ form.field }}')
+        context = Context(dict(
+            form=TestForm(),
+            request=HttpRequest(),
+        ))
+        self.assertEqual(
+            template.render(context),
+            '<input class="one two" id="id_field" maxlength="100" name="field" type="text" />',
+        )
+
     def test_empty(self):
         template = Template('{% load formtags %}{% setattr form.field "placeholder" "Email Address" %}{{ form.field }}')
         context = Context(dict(
