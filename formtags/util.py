@@ -13,8 +13,11 @@ WIDGETS = (
 
 
 def get_field_type(widget):
-    for input_class, field_type in WIDGETS:
-        if isinstance(widget, input_class):
-            return field_type
+    try:
+        return widget.input_type
+    except AttributeError:
+        for input_class, field_type in WIDGETS:
+            if isinstance(widget, input_class):
+                return field_type
 
     return ""

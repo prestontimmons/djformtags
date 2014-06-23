@@ -22,11 +22,9 @@ if not settings.configured:
 def runtests(test_labels):
     sys.path.insert(0, dirname(abspath(__file__)))
 
-    from django.test.simple import DjangoTestSuiteRunner
-    failures = DjangoTestSuiteRunner(
+    from django.test.runner import DiscoverRunner
+    failures = DiscoverRunner(
         verbosity=1,
-        interactive=True,
-        failfast=False,
     ).run_tests(test_labels)
     sys.exit(failures)
 

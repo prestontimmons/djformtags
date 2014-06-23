@@ -35,12 +35,13 @@ def setattr(field, attribute, value):
 @register.simple_tag(takes_context=True)
 def formrow(context, field, **kwargs):
     context = context.__copy__()
+    widget = field.field.widget
 
     if kwargs.get("label"):
         field.label = kwargs["label"]
 
     if kwargs.get("class"):
-        field.field.widget.attrs["class"] = kwargs["class"]
+        widget.attrs["class"] = kwargs["class"]
 
     template_name = kwargs.get("template")
     if not template_name:
@@ -48,7 +49,11 @@ def formrow(context, field, **kwargs):
 
     t = get_template(template_name)
 
+    input_type = get_field_type(widget)
+
     context["field"] = field
+    context["input_type"] = input_type
+
     context.update(kwargs)
 
     return t.render(context)

@@ -55,6 +55,7 @@ class FormRowTemplateTagTest(TestCase):
     def setUp(self):
         templates = {
             "field.html": Template("{{ field }}"),
+            "field-type.html": Template("{{ input_type }}"),
             "label.html": Template("{{ field.label }}"),
             "context.html": Template("{{ variable }}"),
             "kwargs.html": Template("{{ x }} {{ y }}"),
@@ -71,6 +72,15 @@ class FormRowTemplateTagTest(TestCase):
         self.assertEqual(
             template.render(context),
             '<input id="id_field" maxlength="100" name="field" type="text" />',
+        )
+
+    def test_input_type(self):
+        template = Template('{% load formtags %}{% formrow form.field template="field-type.html" %}')
+        form = TestForm()
+        context = Context(dict(form=form))
+        self.assertEqual(
+            template.render(context),
+            'text',
         )
 
     def test_label(self):
