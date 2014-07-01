@@ -54,7 +54,7 @@ def formrow(context, field, **kwargs):
 
     template_name = kwargs.get("template")
     if not template_name:
-        template_name = context["field_template"]
+        template_name = context.get("field_template", "forms/row.html")
 
     t = get_template(template_name)
 
