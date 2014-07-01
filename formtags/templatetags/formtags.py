@@ -47,6 +47,11 @@ def formrow(context, field, **kwargs):
     if kwargs.get("class"):
         widget.attrs["class"] = kwargs["class"]
 
+    if kwargs.get("classes"):
+        cls = widget.attrs.get("class", "")
+        cls += " %s" % kwargs["classes"]
+        widget.attrs["class"] = cls.strip()
+
     template_name = kwargs.get("template")
     if not template_name:
         template_name = context["field_template"]

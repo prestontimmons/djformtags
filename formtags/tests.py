@@ -101,6 +101,15 @@ class FormRowTemplateTagTest(TestCase):
             '<input class="input-text" id="id_field" maxlength="100" name="field" type="text" />',
         )
 
+    def test_classes(self):
+        template = Template('{% load formtags %}{% formrow form.field classes="input-text" template="field.html" %}')
+        form = TestForm()
+        context = Context(dict(form=form))
+        self.assertEqual(
+            template.render(context),
+            '<input class="input-text" id="id_field" maxlength="100" name="field" type="text" />',
+        )
+
     def test_field_template(self):
         template = Template('{% load formtags %}{% with field_template="label.html" %}{% formrow form.field %}{% endwith %}')
         form = TestForm()
