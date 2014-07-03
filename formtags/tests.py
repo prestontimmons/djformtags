@@ -200,3 +200,14 @@ class SetAttrTemplateTagTest(TestCase):
             template.render(context),
             'Email Address',
         )
+
+    def test_set_initial(self):
+        template = Template('{% load formtags %}{% setattr form.field "initial" "broman@gfa.org" %}{{ form.field.field.initial }}')
+        context = Context(dict(
+            form=TestForm(),
+            request=HttpRequest(),
+        ))
+        self.assertEqual(
+            template.render(context),
+            "broman@gfa.org",
+        )

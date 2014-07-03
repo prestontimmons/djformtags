@@ -24,6 +24,8 @@ def setattr(field, attribute, value):
         field.field.widget.input_type = value
     elif attribute == "label":
         field.field.label = value
+    elif attribute == "initial":
+        field.field.initial = value
     elif attribute == "classes":
         cls = field.field.widget.attrs.get("class", "")
         cls += " %s" % value
