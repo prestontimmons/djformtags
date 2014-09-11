@@ -9,7 +9,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def setattr(field, attribute, value):
+def setattr(field, attribute, value=""):
     """
     Sets an attribute on a form field.
 
