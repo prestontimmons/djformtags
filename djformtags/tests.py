@@ -7,7 +7,7 @@ from django.test.utils import (
     restore_template_loaders,
 )
 
-from formtags.util import get_field_type
+from .util import get_field_type
 
 
 class TestForm(forms.Form):

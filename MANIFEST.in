@@ -1,2 +1,1 @@
-include README.rst
-global-include *.html
+include README.md

@@ -8,7 +8,7 @@ from django.conf import settings
 
 if not settings.configured:
     settings_dict = dict(
-        INSTALLED_APPS=["formtags"],
+        INSTALLED_APPS=["djformtags"],
         DATABASES={
             "default": {
                 "ENGINE": "django.db.backends.sqlite3",
@@ -37,7 +37,7 @@ def runtests(test_labels):
 
 if __name__ == "__main__":
     labels = sys.argv[1:] or [
-        "formtags",
+        "djformtags",
     ]
 
     runtests(labels)
