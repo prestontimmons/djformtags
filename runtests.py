@@ -14,9 +14,15 @@ if not settings.configured:
                 "ENGINE": "django.db.backends.sqlite3",
             },
         },
+        SILENCED_SYSTEM_CHECKS=["1_7.W001"],
     )
 
     settings.configure(**settings_dict)
+
+
+import django
+if django.VERSION > (1,7,0):
+    django.setup()
 
 
 def runtests(test_labels):
