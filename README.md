@@ -1,10 +1,9 @@
-Control Django form field rendering from within the template
-------------------------------------------------------------
+# Control Django form field rendering from within the template
 
-This app provides two minimal template tags that simplify and enhance form rendering in Django templates.
+This app provides template tags that simplify and enhance form rendering
+in Django templates.
 
-One: Set custom attributes on a form field
-------------------------------------------
+## One: Set custom attributes on a form field
 
 Say you have the following form with an email field. 
 
@@ -13,7 +12,8 @@ class EmailForm(forms.Form):
     email = forms.CharField(max_length=256)
 ```
 
-Now, you want to reuse this form, but optimized for a mobile device. Let's do it in the form class:
+Now, you want to reuse this form, but optimized for a mobile device. Let's
+do it in the form class:
 
 ```python
 class EmailField(forms.TextInput):
@@ -29,7 +29,8 @@ class MobileEmailForm(EmailForm):
     )
 ```
 
-Really? That's ugly, it requires a new form definition, and it's messing with stuff that belongs in the template.
+Really? That's ugly, it requires a new form definition, and it's messing
+with stuff that belongs in the template.
 
 Enter {% setattr %}:
 
@@ -49,11 +50,11 @@ And you get:
 <input type="email" name="email" maxlength="256" autocapitalize="off" placeholder="me@example.com" class="mobile-input" id="id_email" />
 ```
 
-Set whatever attribute you want directly on the field right in the template where you're rendering the form. No boilerplate needed.
+Set whatever attribute you want directly on the field right in the template
+where you're rendering the form. No boilerplate needed.
 
 
-Two: Rendering form rows
-------------------------
+## Two: Rendering form rows
 
 This tag is more convenience than anything.
 
@@ -73,13 +74,13 @@ Enter {% formrow %}:
 {% formrow form.email template="formrow.html" %}
 ```
 
-You can also pass in a couple common arguments, or pass any values to the form row template.
+You can also pass in a couple common arguments, or pass any values to the
+form row template.
 
 ```html
 {% formrow form.email class="input-email" label="Email Address" template="formrow.html" %}
 ```
 
-And...
-------
+## And...
 
 The end.
