@@ -121,13 +121,13 @@ context. This can be used to customize rendering for different field types.
 Input type is one of the following:
 
 ```
-text
-hidden
-file
-textarea
 checkbox
+file
+hidden
 radio
 select
+text
+textarea
 ```
 
 ## Installation
@@ -141,7 +141,7 @@ pip install djformtags
 Or install from github
 
 ```
-pip install -e git+git@github.com:prestontimmons/djformtags.git# egg=djformtags
+pip install -e git+git@github.com:prestontimmons/djformtags.git#egg=djformtags
 ```
 
 Add ``djformtags`` to ``INSTALLED_APPS``.
